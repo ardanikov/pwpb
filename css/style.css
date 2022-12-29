@@ -1,0 +1,155 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap");
+
+* {
+  font-family: Poppins, sans-serif;
+}
+
+#lname,
+#fname,
+#nama,
+#Email,
+#pass,
+#user,
+#aktor,
+#sementara,
+#userRegist,
+#passRegist {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+select {
+  width: 100%;
+  padding: 16px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #f1f1f1;
+}
+#stat {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+div {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+#kotaklogin {
+  width: 1000px;
+  margin: auto;
+  height: 600px;
+  padding: 0;
+}
+.kotaklogin {
+  width: 350px;
+  margin: 20px auto 80px auto;
+}
+
+#submit {
+  width: 100%;
+  background-color: #a70000;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+#submit:hover {
+  background-color: #daa520;
+}
+#submit1 {
+  width: 100%;
+  background-color: #daa520;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+#submit1:hover {
+  background-color: #daa520;
+}
+
+#logout {
+  width: 100%;
+  background-color: #cd2727;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+#logout:hover {
+  background-color: #8a0e0e;
+}
+.row {
+  display: flex;
+  padding-top: 0;
+  padding: 0;
+  height: 660px;
+}
+
+.column {
+  flex: 50%;
+}
+a {
+  text-decoration: none;
+  color: #ff0000;
+}
+a:hover {
+  text-decoration: none;
+  color: #ff3030;
+}
+.btn {
+  display: flex;
+  justify-content: center;
+}
+.btm {
+  margin-top: 120px;
+  display: flex;
+  width: fit-content;
+  margin-right: 0;
+}
+.btm-regist {
+  margin-top: 120px;
+  display: flex;
+  width: fit-content;
+  margin-right: 0;
+}
+
+.logintitle {
+  color: white;
+  text-align: center;
+}
+.logintitlewrapper {
+  position: relative;
+  background-color: #a70000;
+  margin: 9rem 5px auto 5px;
+}
+
+button.a {
+  width: fit-content;
+  border: none;
+  color: #ff0000;
+  cursor: pointer;
+  font-size: 16px;
+}
+button.a:hover {
+  color: #ff3030;
+}
+#register {
+  margin-top: 4rem;
+  padding: 0 40px 0 40px;
+}
