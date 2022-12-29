@@ -125,7 +125,7 @@ div.content {
   }
 }
 
-.row {
+.row-flex {
   display: flex;
   padding-top: 0;
   padding: 0;
@@ -236,9 +236,10 @@ div.content {
   background-color: #fefefe;
   margin: auto;
   padding: 20px;
-  border: 1px solid #888;
+  border-top: 5px solid #a70000;
   width: 40%;
   overflow: auto;
+  border-radius: 5px;
 }
 .close {
   color: #aaaaaa;

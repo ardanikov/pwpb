@@ -94,3 +94,16 @@ function addSiswa()
     }
     mysqli_query($koneksi, "INSERT INTO `m_siswa` (`id_siswa`, `nis`, `name`, `address`, `tahun_ajaran`, `is_active`) VALUES (NULL, '$nis', '$namalengkap', '$alamat', '$tahunajaran', '$status');");
 }
+function updateSiswa()
+{
+    global $koneksi;
+    $nis = $_POST['nisupdate'];
+    $idsiswa = $_POST['id_siswa'];
+    $namalengkap = $_POST['namalengkapupdate'];
+    $alamat = $_POST['alamatupdate'];
+    $tahunajaran = $_POST['tahunawalupdate'] . "-" . $_POST['tahunakhirupdate'];
+    $status = $_POST['statusSiswaupdate'];
+    mysqli_query($koneksi, "UPDATE `m_siswa` SET `nis` = '$nis', `name` = '$namalengkap', `address` = '$alamat', `tahun_ajaran` = '$tahunajaran', `is_active` = '$status' WHERE `m_siswa`.`id_siswa` = '$idsiswa'; ");
+    echo "<script> alert('Data berhasil disimpan');</script>";
+    getUserData();
+}

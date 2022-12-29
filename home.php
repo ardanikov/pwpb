@@ -2,17 +2,7 @@
 require 'controller/crudController.php';
 require 'controller/sessionController.php';
 checkLoginSessionHome(); //MENGECEK SESSION, ASAL FUNCTION INI DARI SESSIONCONTROLLER.PHP
-if (isset($_POST["logout"])) { //JIKA BUTTON LOGOUT DITEKAN, MAKA AKAN MENJALANKAN FUNCTION LOGOUT. FUNCTION INI BERASAL DARI CRUDCONTROLLER.PHP
-  logout();
-}
-if (isset($_POST["delete-data"])) { //JIKA BUTTON LOGOUT DITEKAN, MAKA AKAN MENJALANKAN FUNCTION LOGOUT. FUNCTION INI BERASAL DARI CRUDCONTROLLER.PHP
-  deleteUserData();
-}
-if (isset($_POST["simpanData"])) {
-  addSiswa();
-}
 getUserData();
-
 ?>
 
 <!DOCTYPE html>
@@ -23,7 +13,27 @@ getUserData();
   <link rel="stylesheet" href="css/home.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
   <title>Sistem Manajemen Sekolah - SMKN 2 SGS</title>
+  <script>
+    /*to prevent Firefox FOUC, this must be here*/
+    let FF_FOUC_FIX;
+  </script>
 </head>
+<?php
+if (isset($_POST["logout"])) { //JIKA BUTTON LOGOUT DITEKAN, MAKA AKAN MENJALANKAN FUNCTION LOGOUT. FUNCTION INI BERASAL DARI CRUDCONTROLLER.PHP
+  logout();
+}
+if (isset($_POST["delete-data"])) { //JIKA BUTTON LOGOUT DITEKAN, MAKA AKAN MENJALANKAN FUNCTION LOGOUT. FUNCTION INI BERASAL DARI CRUDCONTROLLER.PHP
+  deleteUserData();
+}
+if (isset($_POST["simpanData"])) {
+  addSiswa();
+}
+if (isset($_POST["updateData"])) {
+  updateSiswa();
+}
+
+
+?>
 
 <body onload="onloadFunction()">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
@@ -45,7 +55,7 @@ getUserData();
     <div class="content">
       <div style="margin-top: 5rem;">
         <h2>Indeks Jumlah Siswa</h2>
-        <div class="row">
+        <div class="row-flex">
           <div class="column">
             <canvas id="myChart" style="width:100%;max-width:500px"></canvas>
           </div>
@@ -83,7 +93,7 @@ getUserData();
                 <th>Alamat</th>
                 <th>Tahun Ajaran</th>
                 <th>Status</th>
-                <th style="text-align: center;">Aksi</th>
+                <th style="text-align: center;  width:70px;">Aksi</th>
             </thead>
             </tr>
             <?php $count = 1;
@@ -101,8 +111,15 @@ getUserData();
                     } ?></td>
                 <td>
                   <div class="row" style="text-align:center;">
-                    <div class="col">
-                      <button id="btnUpdate" class="button-edit"><i class="bi bi-pencil-fill"></i></button>
+                    <div class="col" onclick="editDetail({
+                      id : '<?= $userdata['id_siswa'] ?>',
+                      nis : '<?= $userdata['nis'] ?>',
+                      name : '<?= $userdata['name'] ?>',
+                      address : '<?= $userdata['address'] ?>',
+                      tahunajaran : '<?= $userdata['tahun_ajaran'] ?>',
+                      is_active : '<?= $userdata['is_active'] ?>',
+                      })">
+                      <button id="btnUpdate" onclick="updateModal()" class="button-edit"><i class="bi bi-pencil-fill"></i></button>
                     </div>
                     <div class="col">
                       <form action="#masteruser" method="post">
@@ -135,7 +152,7 @@ getUserData();
               <p>NIS</p>
             </div>
             <div class="col">
-              <input type="text" name="nis">
+              <input type="number" minlength="4" maxlength="20" name="nis">
             </div>
           </div>
           <div class="row">
@@ -143,14 +160,14 @@ getUserData();
               <p>Nama Lengkap</p>
             </div>
             <div class="col">
-              <input type="text" name="namalengkap">
+              <input type="text" minlength="2" maxlength="50" name="namalengkap">
             </div>
           </div>
           <div class="row">
             <div class="col">
               <p>Alamat</p>
             </div>
-            <div class="col"><input type="text" name="alamat"></div>
+            <div class="col"><input type="text" minlength="4" maxlength="200" name="alamat"></div>
           </div>
           <div class="row">
             <div class="col">
@@ -158,9 +175,9 @@ getUserData();
             </div>
             <div class="col">
               <div class="row">
-                <div class="col"><input type="text" name="tahunawal"></div>
+                <div class="col"><input type="number" minlength="4" maxlength="4" name="tahunawal"></div>
                 <p style="margin: 0 2px 0 2px;">s/d</p>
-                <div class="col"><input type="text" name="tahunakhir"></div>
+                <div class="col"><input type="number" minlength="4" maxlength="4 " name="tahunakhir"></div>
               </div>
             </div>
           </div>
@@ -175,7 +192,7 @@ getUserData();
           </div>
         </div>
         <div>
-          <button type="submit" name="simpanData">Simpan</button>
+          <button type="submit" name="simpanData" class="button-tambah" onclick="return confirmAction()">Simpan</button>
         </div>
       </form>
     </div>
@@ -196,7 +213,8 @@ getUserData();
               <p>NIS</p>
             </div>
             <div class="col">
-              <input type="text" name="nisupdate" value="">
+              <input type="number" minlength="4" maxlength="20" name="nisupdate" id="nisupdate">
+              <input type="text" style="display: none;" name="id_siswa" id="id_siswa">
             </div>
           </div>
           <div class="row">
@@ -204,14 +222,14 @@ getUserData();
               <p>Nama Lengkap</p>
             </div>
             <div class="col">
-              <input type="text" name="namalengkapupdate">
+              <input type="text" minlength="2" maxlength="50" name="namalengkapupdate" id="namalengkapupdate">
             </div>
           </div>
           <div class="row">
             <div class="col">
               <p>Alamat</p>
             </div>
-            <div class="col"><input type="text" name="alamatupdate"></div>
+            <div class="col"><input type="text" minlength="4" maxlength="200" name="alamatupdate" id="alamatupdate"></div>
           </div>
           <div class="row">
             <div class="col">
@@ -219,9 +237,9 @@ getUserData();
             </div>
             <div class="col">
               <div class="row">
-                <div class="col"><input type="text" name="tahunawalupdate"></div>
+                <div class="col"><input type="number" minlength="4" maxlength="4" name="tahunawalupdate" id="tahunawalupdate"></div>
                 <p style="margin: 0 2px 0 2px;">s/d</p>
-                <div class="col"><input type="text" name="tahunakhirupdate"></div>
+                <div class="col"><input type="number" minlength="4" maxlength="4" name="tahunakhirupdate" id="tahunakhirupdate"></div>
               </div>
             </div>
           </div>
@@ -229,18 +247,19 @@ getUserData();
             <div class="col">
               <p>Status</p>
             </div>
-            <div class="col"><select name="statusSiswaupdate" id="status">
+            <div class="col"><select name="statusSiswaupdate" id="statusupdate">
                 <option value="0">Nonaktif</option>
                 <option value="1" selected>Aktif</option>
               </select></div>
           </div>
         </div>
         <div>
-          <button type="submit" name="updateData">Simpan</button>
+          <button type="submit" name="updateData" class="button-tambah" onclick=" return confirm('Yakin data sudah benar ?')">Simpan</button>
         </div>
       </form>
     </div>
   </div>
+
   <script>
     var berandaa = document.getElementById("beranda");
     var masteruser = document.getElementById("masteruser");
@@ -252,6 +271,7 @@ getUserData();
     var modalupdate = document.getElementById("updateUser");
     var span = document.getElementsByClassName("close")[0];
     var spanUpdate = document.getElementsByClassName("close")[1];
+    var dataModal = {};
     span.onclick = function() {
       modal.style.display = "none";
     }
@@ -263,7 +283,7 @@ getUserData();
       modal.style.display = "block";
     }
 
-    btnupdate.onclick = function() {
+    function updateModal() {
       modalupdate.style.display = "block";
     }
 
@@ -271,26 +291,11 @@ getUserData();
 
 
     function onloadFunction() {
-      // window.location = "http://127.0.0.1:8080/login_k2/home.php#beranda"
       masteruser.style.display = "none";
       berandaa.style.display = "block";
       btnberanda.classList.add("active")
 
     }
-    //get section id
-
-    // if (window.location.pathname = "/login_k2/home.php#beranda") {
-    //   masteruser.style.display = "none";
-    //   berandaa.style.display = "block";
-    //   btnberanda.classList.add("active");
-    //   btnmasteruser.classList.remove("active");
-    // }
-    // if (window.location.pathname = "/login_k2/home.php#masteruser") {
-    //   masteruser.style.display = "block";
-    //   berandaa.style.display = "none";
-    //   btnberanda.classList.remove("active");
-    //   btnmasteruser.classList.add("active");
-    // }
 
     function beranda() {
       masteruser.style.display = "none";
@@ -419,6 +424,17 @@ getUserData();
         }
       }
     });
+
+    function editDetail(params) {
+      this.dataModal = params
+      document.getElementById("id_siswa").value = params['id'];
+      document.getElementById("nisupdate").value = params['nis'];
+      document.getElementById("namalengkapupdate").value = params['name'];
+      document.getElementById("alamatupdate").value = params['address'];
+      document.getElementById("statusupdate").value = params['is_active'];
+      document.getElementById("tahunawalupdate").value = params['tahunajaran'].slice(-9, -5);
+      document.getElementById("tahunakhirupdate").value = params['tahunajaran'].slice(-4);
+    }
   </script>
 
 </body>
