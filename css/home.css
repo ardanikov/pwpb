@@ -223,7 +223,7 @@ div.content {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
   z-index: 1; /* Sit on top */
-  padding-top: 50px; /* Location of the box */
+  padding-top: 110px; /* Location of the box */
   left: 0;
   top: 0;
   width: 100%; /* Full width */
@@ -241,7 +241,9 @@ div.content {
   overflow: auto;
   border-radius: 5px;
 }
-.close {
+.close,
+.closeGuru,
+.closeGuruUpdate {
   color: #aaaaaa;
   float: right;
   font-size: 28px;
@@ -249,7 +251,11 @@ div.content {
 }
 
 .close:hover,
-.close:focus {
+.close:focus,
+.closeGuru:hover,
+.closeGuru:focus,
+.closeGuruUpdate:hover,
+.closeGuruUpdate:focus {
   color: #000;
   text-decoration: none;
   cursor: pointer;

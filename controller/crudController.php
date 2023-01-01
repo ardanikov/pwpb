@@ -70,6 +70,12 @@ function getUserData()
     $query = mysqli_query($koneksi, "SELECT * FROM m_siswa");
     $_REQUEST['queryGetUser'] = $query; //MENYIMPAN HASIL QUERY KE VARIABEL $_REQUEST
 }
+function getGuruData()
+{ //GET DATA SISWA
+    global $koneksi;
+    $query = mysqli_query($koneksi, "SELECT * FROM m_guru");
+    $_REQUEST['queryGetGuru'] = $query; //MENYIMPAN HASIL QUERY KE VARIABEL $_REQUEST
+}
 
 function deleteUserData()
 {
@@ -77,6 +83,15 @@ function deleteUserData()
     $id = $_POST['delete-data'];
     mysqli_query($koneksi, "DELETE FROM m_siswa WHERE id_siswa=$id");
     echo "<script> alert('Data berhasil dihapus');</script>";
+    getUserData();
+}
+function deleteGuruData()
+{
+    global $koneksi;
+    $id = $_POST['delete-dataguru'];
+    mysqli_query($koneksi, "DELETE FROM m_guru WHERE id_guru=$id");
+    echo "<script> alert('Data berhasil dihapus');</script>";
+    getGuruData();
 }
 
 function addSiswa()
@@ -93,6 +108,26 @@ function addSiswa()
         return false;
     }
     mysqli_query($koneksi, "INSERT INTO `m_siswa` (`id_siswa`, `nis`, `name`, `address`, `tahun_ajaran`, `is_active`) VALUES (NULL, '$nis', '$namalengkap', '$alamat', '$tahunajaran', '$status');");
+    echo "<script> alert('Data berhasil disimpan');</script>";
+    getUserData();
+}
+function addGuru()
+{
+    global $koneksi;
+    $nig = $_POST['nig'];
+    $namalengkap = $_POST['namalengkapguru'];
+    $alamat = $_POST['alamatguru'];
+    // $tahunmengajar = $_POST['tahunawalguru'] . "-" . $_POST['tahunakhirguru'];
+    $tahunmengajar = 'NULL';
+    $status = $_POST['statusGuru'];
+    $check = mysqli_query($koneksi, "SELECT nig FROM m_guru WHERE nig = $nig");
+    if (mysqli_fetch_assoc($check)) {
+        echo "<script> alert('NIG Sudah ada !');</script>";
+        return false;
+    }
+    mysqli_query($koneksi, "INSERT INTO `m_guru` (`id_guru`, `nig`, `name`, `address`, `tahun_mengajar`, `is_active`) VALUES (NULL, '$nig', '$namalengkap', '$alamat', '$tahunmengajar', '$status');");
+    echo "<script> alert('Data berhasil disimpan');</script>";
+    getGuruData();
 }
 function updateSiswa()
 {
@@ -106,4 +141,17 @@ function updateSiswa()
     mysqli_query($koneksi, "UPDATE `m_siswa` SET `nis` = '$nis', `name` = '$namalengkap', `address` = '$alamat', `tahun_ajaran` = '$tahunajaran', `is_active` = '$status' WHERE `m_siswa`.`id_siswa` = '$idsiswa'; ");
     echo "<script> alert('Data berhasil disimpan');</script>";
     getUserData();
+}
+function updateGuru()
+{
+    global $koneksi;
+    $nig = $_POST['nigupdate'];
+    $idguru = $_POST['id_guru'];
+    $namalengkap = $_POST['namalengkapguruupdate'];
+    $alamat = $_POST['alamatguruupdate'];
+    $tahunajaran = NULL;
+    $status = $_POST['statusGuruupdate'];
+    mysqli_query($koneksi, "UPDATE `m_guru` SET `nig` = '$nig', `name` = '$namalengkap', `address` = '$alamat', `tahun_mengajar` = '$tahunajaran', `is_active` = '$status' WHERE `m_guru`.`id_guru` = '$idguru'; ");
+    echo "<script> alert('Data berhasil disimpan');</script>";
+    getGuruData();
 }

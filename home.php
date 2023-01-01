@@ -3,6 +3,7 @@ require 'controller/crudController.php';
 require 'controller/sessionController.php';
 checkLoginSessionHome(); //MENGECEK SESSION, ASAL FUNCTION INI DARI SESSIONCONTROLLER.PHP
 getUserData();
+getGuruData();
 ?>
 
 <!DOCTYPE html>
@@ -22,22 +23,33 @@ getUserData();
 if (isset($_POST["logout"])) { //JIKA BUTTON LOGOUT DITEKAN, MAKA AKAN MENJALANKAN FUNCTION LOGOUT. FUNCTION INI BERASAL DARI CRUDCONTROLLER.PHP
   logout();
 }
-if (isset($_POST["delete-data"])) { //JIKA BUTTON LOGOUT DITEKAN, MAKA AKAN MENJALANKAN FUNCTION LOGOUT. FUNCTION INI BERASAL DARI CRUDCONTROLLER.PHP
+if (isset($_POST["delete-data"])) {
   deleteUserData();
+}
+if (isset($_POST["delete-dataguru"])) {
+  deleteGuruData();
 }
 if (isset($_POST["simpanData"])) {
   addSiswa();
 }
+if (isset($_POST["simpanDataGuru"])) {
+  addGuru();
+}
 if (isset($_POST["updateData"])) {
   updateSiswa();
+}
+if (isset($_POST["updateGuru"])) {
+  updateGuru();
 }
 
 
 ?>
 
-<body onload="onloadFunction()">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 
+<body onload="onloadFunction()">
+
+  <!-- NAVBAR -->
   <div id="navbar">
     <h3>DASHBOARD ADMIN SMK NEGERI 2 SINGOSARI</h3>
     <form action="" method="post">
@@ -49,8 +61,10 @@ if (isset($_POST["updateData"])) {
   <div class="sidebar">
     <a href="#beranda" id="btnberanda" onclick="beranda()">Beranda</a>
     <a href="#masteruser" id="btnmasteruser" onclick="masterUser()">Daftar Siswa</a>
+    <a href="#masterguru" id="btnmasterguru" onclick="masterGuru()">Daftar Guru</a>
   </div>
 
+  <!-- BERANDA -->
   <section id="beranda">
     <div class="content">
       <div style="margin-top: 5rem;">
@@ -72,6 +86,8 @@ if (isset($_POST["updateData"])) {
       </div>
     </div>
   </section>
+
+  <!-- DAFTAR SISWA -->
   <section id="masteruser">
     <div class="content">
       <div style="margin-top: 5rem;">
@@ -137,6 +153,74 @@ if (isset($_POST["updateData"])) {
     </div>
   </section>
 
+  <!-- DAFTAR GURU -->
+  <section id="masterguru">
+    <div class="content">
+      <div style="margin-top: 5rem;">
+        <div class="row">
+          <div class="col">
+            <h2 style="margin: 0; width:fit-content; height:fit-content;">Daftar Guru</h2>
+          </div>
+          <div class="col">
+            <button class="button-tambah" id="btnAddGuru"><i class="bi bi-plus-lg"></i> Tambah Data</button>
+          </div>
+        </div>
+        <div class="row">
+          <table class="styled-table display" id="table_id">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>NIG</th>
+                <th>Nama Lengkap</th>
+                <th>Alamat</th>
+                <!-- <th>Tahun Mengajar</th> -->
+                <th>Status</th>
+                <th style="text-align: center;  width:70px;">Aksi</th>
+            </thead>
+            </tr>
+            <?php $count = 1;
+            while ($userdata = mysqli_fetch_array($_REQUEST['queryGetGuru'], MYSQLI_ASSOC)) { ?>
+              <tr>
+                <td><?= $count ?></td>
+                <td><?= $userdata['nig'] ?></td>
+                <td><?= $userdata['name'] ?></td>
+                <td><?= $userdata['address'] ?></td>
+
+                <td><?php if ($userdata['is_active'] === '1') {
+                      echo 'Aktif';
+                    } else {
+                      echo 'Nonaktif';
+                    } ?></td>
+                <td>
+                  <div class="row" style="text-align:center;">
+                    <div class="col" onclick="editDetailGuru({
+                      id : '<?= $userdata['id_guru'] ?>',
+                      nig : '<?= $userdata['nig'] ?>',
+                      name : '<?= $userdata['name'] ?>',
+                      address : '<?= $userdata['address'] ?>',
+                      is_active : '<?= $userdata['is_active'] ?>',
+                      })">
+                      <button id="btnUpdate" onclick="updateGuruModal()" class="button-edit"><i class="bi bi-pencil-fill"></i></button>
+                    </div>
+                    <div class="col">
+                      <form action="#masterguru" method="post">
+                        <button class="button-hapus" type="submit" name="delete-dataguru" value="<?= $userdata['id_guru'] ?>" onclick=" return confirm('Ingin menghapus data ini ? Aksi ini tidak dapat dibatalkan')"><i class="bi bi-trash-fill"></i></button>
+                    </div>
+                  </div>
+                </td>
+                </form>
+              </tr>
+            <?php $count++;
+            } ?>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- MODALS -->
+
   <!-- ADD USER -->
   <div id="addUser" class="modal">
     <!-- Modal content -->
@@ -193,6 +277,66 @@ if (isset($_POST["updateData"])) {
         </div>
         <div>
           <button type="submit" name="simpanData" class="button-tambah" onclick="return confirmAction()">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- ADD GURU -->
+  <div id="addGuru" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+      <form action="" method="post">
+        <span class="closeGuru">&times;</span>
+        <div>
+          <p>Tambah Data Guru</p>
+        </div>
+        <div>
+          <div class="row">
+            <div class="col">
+              <p>NIG</p>
+            </div>
+            <div class="col">
+              <input type="number" minlength="4" maxlength="20" name="nig">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <p>Nama Lengkap</p>
+            </div>
+            <div class="col">
+              <input type="text" minlength="2" maxlength="50" name="namalengkapguru">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <p>Alamat</p>
+            </div>
+            <div class="col"><input type="text" minlength="4" maxlength="200" name="alamatguru"></div>
+          </div>
+          <!-- <div class="row">
+            <div class="col">
+              <p>Tahun Mengajar</p>
+            </div>
+            <div class="col">
+              <div class="row">
+                <div class="col"><input type="number" minlength="4" maxlength="4" name="tahunawalguru"></div>
+                <p style="margin: 0 2px 0 2px;">s/d</p>
+                <div class="col"><input type="number" minlength="4" maxlength="4 " name="tahunakhirguru"></div>
+              </div>
+            </div>
+          </div> -->
+          <div class="row">
+            <div class="col">
+              <p>Status</p>
+            </div>
+            <div class="col"><select name="statusGuru" id="status">
+                <option value="0">Nonaktif</option>
+                <option value="1" selected>Aktif</option>
+              </select></div>
+          </div>
+        </div>
+        <div>
+          <button type="submit" name="simpanDataGuru" class="button-tambah" onclick="return confirmAction()">Simpan</button>
         </div>
       </form>
     </div>
@@ -260,55 +404,196 @@ if (isset($_POST["updateData"])) {
     </div>
   </div>
 
+  <!-- UPDATE Guru -->
+  <div id="updateGuru" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+      <form action="" method="post">
+        <span class="closeGuruUpdate">&times;</span>
+        <div>
+          <p>Update Data Guru</p>
+        </div>
+        <div>
+          <div class="row">
+            <div class="col">
+              <p>NIG</p>
+            </div>
+            <div class="col">
+              <input type="number" minlength="4" maxlength="20" name="nigupdate" id="nigupdate">
+              <input type="text" style="display: none;" name="id_guru" id="id_guru">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <p>Nama Lengkap</p>
+            </div>
+            <div class="col">
+              <input type="text" minlength="2" maxlength="50" name="namalengkapguruupdate" id="namalengkapguruupdate">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <p>Alamat</p>
+            </div>
+            <div class="col"><input type="text" minlength="4" maxlength="200" name="alamatguruupdate" id="alamatguruupdate"></div>
+          </div>
+          <!-- <div class="row">
+            <div class="col">
+              <p>Tahun Mengajar</p>
+            </div>
+            <div class="col">
+              <div class="row">
+                <div class="col"><input type="number" minlength="4" maxlength="4" name="tahunawalguruupdate" id="tahunawalguruupdate"></div>
+                <p style="margin: 0 2px 0 2px;">s/d</p>
+                <div class="col"><input type="number" minlength="4" maxlength="4" name="tahunakhirguruupdate" id="tahunakhirguruupdate"></div>
+              </div>
+            </div>
+          </div> -->
+          <div class="row">
+            <div class="col">
+              <p>Status</p>
+            </div>
+            <div class="col"><select name="statusGuruupdate" id="statusguruupdate">
+                <option value="0">Nonaktif</option>
+                <option value="1" selected>Aktif</option>
+              </select></div>
+          </div>
+        </div>
+        <div>
+          <button type="submit" name="updateGuru" class="button-tambah" onclick=" return confirm('Yakin data sudah benar ?')">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
     var berandaa = document.getElementById("beranda");
     var masteruser = document.getElementById("masteruser");
+    var masterguru = document.getElementById("masterguru");
     var btnberanda = document.getElementById("btnberanda");
     var btnmasteruser = document.getElementById("btnmasteruser");
+    var btnmasterguru = document.getElementById("btnmasterguru");
     var btnadd = document.getElementById("btnAdd");
+    var btnaddguru = document.getElementById("btnAddGuru");
     var btnupdate = document.getElementById("btnUpdate");
     var modal = document.getElementById("addUser");
+    var modalguru = document.getElementById("addGuru");
     var modalupdate = document.getElementById("updateUser");
+    var modalupdateguru = document.getElementById("updateGuru");
     var span = document.getElementsByClassName("close")[0];
     var spanUpdate = document.getElementsByClassName("close")[1];
+    var spanGuruUpdate = document.getElementsByClassName("closeGuruUpdate")[0];
+    var spanGuru = document.getElementsByClassName("closeGuru")[0];
     var dataModal = {};
     span.onclick = function() {
       modal.style.display = "none";
     }
+    spanGuru.onclick = function() {
+      modalguru.style.display = "none";
+    }
     spanUpdate.onclick = function() {
       modalupdate.style.display = "none";
+    }
+    spanGuruUpdate.onclick = function() {
+      modalupdateguru.style.display = "none";
     }
 
     btnadd.onclick = function() {
       modal.style.display = "block";
+    }
+    btnaddguru.onclick = function() {
+      modalguru.style.display = "block";
     }
 
     function updateModal() {
       modalupdate.style.display = "block";
     }
 
+    function updateGuruModal() {
+      modalupdateguru.style.display = "block";
+    }
+
 
 
 
     function onloadFunction() {
-      masteruser.style.display = "none";
-      berandaa.style.display = "block";
+      // window.location.hash = '#beranda';
       btnberanda.classList.add("active")
+      if (window.location.hash == '#beranda') {
+        masteruser.style.display = "none";
+        masterguru.style.display = "none";
+        berandaa.style.display = "block";
+        btnberanda.classList.add("active");
+        btnmasteruser.classList.remove("active");
+        btnmasterguru.classList.remove("active");
+      }
+      if (window.location.hash == '') {
+        masteruser.style.display = "none";
+        masterguru.style.display = "none";
+        berandaa.style.display = "block";
+        btnberanda.classList.add("active");
+        btnmasteruser.classList.remove("active");
+        btnmasterguru.classList.remove("active");
+      }
+      if (window.location.hash == '#masteruser') {
+        masteruser.style.display = "block";
+        berandaa.style.display = "none";
+        masterguru.style.display = "none";
+        btnberanda.classList.remove("active");
+        btnmasterguru.classList.remove("active");
+        btnmasteruser.classList.add("active");
+      }
+      if (window.location.hash == '#masterguru') {
+        masterguru.style.display = "block";
+        masteruser.style.display = "none";
+        berandaa.style.display = "none";
+        btnberanda.classList.remove("active");
+        btnmasteruser.classList.remove("active");
+        btnmasterguru.classList.add("active");
+      }
 
     }
 
     function beranda() {
-      masteruser.style.display = "none";
-      berandaa.style.display = "block";
-      btnberanda.classList.add("active");
-      btnmasteruser.classList.remove("active");
+      window.location.hash = '#beranda'
+      if (window.location.hash == '#beranda') {
+        masteruser.style.display = "none";
+        masterguru.style.display = "none";
+        berandaa.style.display = "block";
+        btnberanda.classList.add("active");
+        btnmasteruser.classList.remove("active");
+        btnmasterguru.classList.remove("active");
+        console.log(window.location.hash);
+      }
+
     }
 
     function masterUser() {
-      masteruser.style.display = "block";
-      berandaa.style.display = "none";
-      btnberanda.classList.remove("active");
-      btnmasteruser.classList.add("active");
+      window.location.hash = '#masteruser'
+      if (window.location.hash == '#masteruser') {
+        masteruser.style.display = "block";
+        berandaa.style.display = "none";
+        masterguru.style.display = "none";
+        btnberanda.classList.remove("active");
+        btnmasterguru.classList.remove("active");
+        btnmasteruser.classList.add("active");
+        console.log(window.location.hash);
+      }
+
+    }
+
+    function masterGuru() {
+      window.location.hash = '#masterguru'
+      if (window.location.hash == '#masterguru') {
+        masterguru.style.display = "block";
+        berandaa.style.display = "none";
+        masteruser.style.display = "none";
+        btnberanda.classList.remove("active");
+        btnmasteruser.classList.remove("active");
+        btnmasterguru.classList.add("active");
+        console.log(window.location.hash);
+      }
+
     }
 
 
@@ -434,6 +719,17 @@ if (isset($_POST["updateData"])) {
       document.getElementById("statusupdate").value = params['is_active'];
       document.getElementById("tahunawalupdate").value = params['tahunajaran'].slice(-9, -5);
       document.getElementById("tahunakhirupdate").value = params['tahunajaran'].slice(-4);
+    }
+
+    function editDetailGuru(params) {
+      console.log(params);
+      document.getElementById("id_guru").value = params['id'];
+      document.getElementById("nigupdate").value = params['nig'];
+      document.getElementById("namalengkapguruupdate").value = params['name'];
+      document.getElementById("alamatguruupdate").value = params['address'];
+      document.getElementById("statusGuruupdate").value = params['is_active'];
+      // document.getElementById("tahunawalguruupdate").value = params['tahunmengajar'].slice(-9, -5);
+      // document.getElementById("tahunakhirguruupdate").value = params['tahunmengajar'].slice(-4);
     }
   </script>
 
